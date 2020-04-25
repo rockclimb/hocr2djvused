@@ -15,41 +15,6 @@
 
 from __future__ import print_function
 
-import argparse
-import sys
-
-class UnknownLanguageList(Exception):
-
-    def __init__(self):
-        Exception.__init__(self,
-            'unable to determine list of available languages'
-        )
-
-class InvalidLanguageId(ValueError):
-
-    def __init__(self, name):
-        ValueError.__init__(self,
-            'invalid language identifier: {lang}; '
-            'language identifier is typically an ISO 639-2 three-letter code'
-            .format(lang=name)
-        )
-
-class MissingLanguagePack(Exception):
-
-    def __init__(self, language):
-        Exception.__init__(self,
-            'language pack for the selected language ({lang}) is not available'
-            .format(lang=language)
-        )
-
-class EngineNotFound(Exception):
-
-    def __init__(self, name):
-        Exception.__init__(self,
-            'OCR engine ({engine}) was not found'
-            .format(engine=name)
-        )
-
 class MalformedOcrOutput(Exception):
 
     def __init__(self, message):
@@ -67,24 +32,11 @@ class MalformedHocr(MalformedOcrOutput):
         )
 
 EXIT_FATAL = 1
-EXIT_NONFATAL = 2
-
-def fatal(message):
-    ap = argparse.ArgumentParser()
-    message = '{prog}: error: {msg}'.format(prog=ap.prog, msg=message)
-    print(message, file=sys.stderr)
-    sys.exit(EXIT_FATAL)
 
 __all__ = [
-    'UnknownLanguageList',
-    'InvalidLanguageId',
-    'MissingLanguagePack',
-    'EngineNotFound',
     'MalformedOcrOutput',
     'MalformedHocr',
     'EXIT_FATAL',
-    'EXIT_NONFATAL',
-    'fatal',
 ]
 
 # vim:ts=4 sts=4 sw=4 et

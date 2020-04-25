@@ -65,6 +65,8 @@ class BBox(object):
                 return False
         return True
 
+    __bool__ = __nonzero__
+
     def __repr__(self):
         return '{cls}({0!r}, {1!r}, {2!r}, {3!r})'.format(
             *self._coordinates,
@@ -208,7 +210,7 @@ def group_words(zones, details, word_break_iterator):
             i = j
             continue
         bbox = BBox()
-        for k in xrange(i, j):
+        for k in range(i, j):
             bbox.update(zones[k].bbox)
         last_word = Zone(type=const.TEXT_ZONE_WORD, bbox=bbox)
         words += [last_word]
@@ -217,7 +219,7 @@ def group_words(zones, details, word_break_iterator):
         else:
             last_word += [
                 Zone(type=const.TEXT_ZONE_CHARACTER, bbox=(x0, y0, x1, y1), children=[ch])
-                for k in xrange(i, j)
+                for k in range(i, j)
                 for (x0, y0, x1, y1), ch in [(zones[k].bbox, text[k])]
             ]
         i = j

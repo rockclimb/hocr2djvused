@@ -11,7 +11,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 # for more details.
 
-PYTHON = python
+PYTHON = python3
 
 PREFIX = /usr/local
 DESTDIR =
@@ -41,11 +41,9 @@ define install-lib
 endef
 
 .PHONY: install
-install: ocrodjvu
+install: hocr2djvused
 	$(PYTHON) - < lib/__init__.py  # Python version check
-	$(call install-script,ocrodjvu)
 	$(call install-script,hocr2djvused)
-	$(call install-script,djvu2hocr)
 	$(call install-lib)
 	$(call install-lib,cli)
 	$(call install-lib,engines)
@@ -60,7 +58,7 @@ else
 endif
 
 .PHONY: test
-test: ocrodjvu
+test: hocr2djvused
 	$(PYTHON) -c 'import nose; nose.main()' --verbose
 
 .PHONY: clean

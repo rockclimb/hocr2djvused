@@ -13,8 +13,8 @@
 # FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 # for more details.
 
-import io
 import distutils.version
+import six
 
 from tests.tools import (
     assert_equal,
@@ -31,7 +31,7 @@ def test_print_sexpr():
         out = r'"je\305\274"'
     else:
         out = '"jeż"'
-    fp = io.BytesIO()
+    fp = six.StringIO()
     expr = text_zones.sexpr.Expression(inp)
     text_zones.print_sexpr(expr, fp)
     fp.seek(0)

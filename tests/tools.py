@@ -21,6 +21,7 @@ import logging
 import os
 import re
 import sys
+import six
 
 from nose import SkipTest
 
@@ -138,7 +139,7 @@ def assert_raises_regex(exc_type, regex):
 
 @noseimport(2, 7, 'assert_regexp_matches')
 def assert_regex(text, regex):
-    if isinstance(regex, basestring):
+    if isinstance(regex, six.string_types):
         regex = re.compile(regex)
     if not regex.search(text):
         message = "Regex didn't match: {0!r} not found in {1!r}".format(regex.pattern, text)
@@ -150,12 +151,12 @@ def interim(obj, **override):
         (key, getattr(obj, key))
         for key in override
     )
-    for key, value in override.iteritems():
+    for key, value in override.items():
         setattr(obj, key, value)
     try:
         yield
     finally:
-        for key, value in copy.iteritems():
+        for key, value in copy.items():
             setattr(obj, key, value)
 
 @contextlib.contextmanager
@@ -164,10 +165,10 @@ def interim_environ(**override):
     copy_keys = keys & set(os.environ)
     copy = dict(
         (key, value)
-        for key, value in os.environ.iteritems()
+        for key, value in os.environ.items()
         if key in copy_keys
     )
-    for key, value in override.iteritems():
+    for key, value in override.items():
         if value is None:
             os.environ.pop(key, None)
         else:

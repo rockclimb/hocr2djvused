@@ -16,13 +16,14 @@
 
 from __future__ import print_function
 
-import io
 import os
 import sys
 
 import nose
 import nose.plugins.allmodules
 import nose.plugins.cover
+
+import six
 
 class Coverage(nose.plugins.cover.Coverage):
 
@@ -44,7 +45,7 @@ def main():
     ]
     path = os.path.join('tests', 'coverage')
     plugin = Coverage()
-    report_stream = plugin.stream = io.BytesIO()
+    report_stream = plugin.stream = six.StringIO()
     print('Generated automatically by private/update-coverage. '
         'Do not edit.\n', file=report_stream)
     plugins = [plugin, nose.plugins.allmodules.AllModules()]
