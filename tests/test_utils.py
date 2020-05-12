@@ -15,21 +15,28 @@
 
 import sys
 import warnings
+import six
 
 from tests.tools import (
     assert_equal,
+    assert_in,
     assert_is,
     assert_is_instance,
+    assert_is_none,
     assert_raises,
     assert_raises_regex,
+    interim,
 )
 
+import lib.utils
 from lib.utils import (
     EncodingWarning,
     enhance_import_error,
     identity,
+    parse_page_numbers,
     property,
     sanitize_utf8,
+    smart_repr,
 )
 
 class test_enhance_import():
@@ -49,6 +56,54 @@ class test_enhance_import():
         assert_equal(str(ecm.exception)[-78:],
             '; please install the PyNonexistent package <http://pynonexistent.example.net/>'
         )
+
+# pylint: disable=eval-used
+class test_smart_repr():
+
+    def test_byte_string(self):
+        for s in '', '\f', 'eggs', '''e'gg"s''', 'jeż', '''j'e"ż''':
+            assert_equal(eval(smart_repr(s)), s)
+
+    def test_unicode_string(self):
+        for s in u'', u'\f', u'eggs', u'''e'gg"s''', u'jeż', u'''j'e"ż''':
+            assert_equal(eval(smart_repr(s)), s)
+
+    def test_encoded_string(self):
+        for s in '', '\f', 'eggs', '''e'gg"s''':
+            assert_equal(eval(smart_repr(s, 'ASCII')), s)
+            assert_equal(eval(smart_repr(s, 'UTF-8')), s)
+        for s in 'jeż', '''j'e"ż''':
+            s_repr = smart_repr(s, 'ASCII')
+            assert_is_instance(s_repr, str)
+            if isinstance(s_repr,six.binary_type):
+                s_repr.decode('ASCII')
+            assert_equal(eval(s_repr), s)
+        for s in 'jeż', '''j'e"ż''':
+            s_repr = smart_repr(s, 'UTF-8')
+            assert_is_instance(s_repr, str)
+            assert_in('ż', s_repr)
+            assert_equal(eval(s_repr), s)
+# pylint: enable=eval-used
+
+class test_parse_page_numbers():
+
+    def test_none(self):
+        assert_is_none(parse_page_numbers(None))
+
+    def test_single(self):
+        assert_equal(parse_page_numbers('17'), [17])
+
+    def test_range(self):
+        assert_equal(parse_page_numbers('37-42'), [37, 38, 39, 40, 41, 42])
+
+    def test_multiple(self):
+        assert_equal(parse_page_numbers('17,37-42'), [17, 37, 38, 39, 40, 41, 42])
+
+    def test_bad_range(self):
+        assert_equal(parse_page_numbers('42-37'), [])
+
+    def test_collapsed_range(self):
+        assert_equal(parse_page_numbers('17-17'), [17])
 
 class test_sanitize_utf8():
 

@@ -44,6 +44,7 @@ endef
 install: hocr2djvused
 	$(PYTHON) - < lib/__init__.py  # Python version check
 	$(call install-script,hocr2djvused)
+	$(call install-script,djvu2hocr)
 	$(call install-lib)
 	$(call install-lib,cli)
 	$(call install-lib,engines)

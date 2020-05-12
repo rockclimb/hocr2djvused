@@ -6,7 +6,7 @@ setup(
     name="ocrodjvu",
     version=version.__version__,
     packages=find_packages(exclude=['tests','tests.*']),
-    scripts=["hocr2djvused"],
+    scripts=["hocr2djvused", "djvu2hocr"],
 
     install_requires=["python-djvulibre", "pyicu"],
 

@@ -14,10 +14,15 @@
 # for more details.
 
 from __future__ import absolute_import
+import functools
+import locale
+import os
 import re
 import warnings
 from six.moves import map
 import six
+from six.moves import range
+import sys
 
 def enhance_import_error(exception, package, homepage):
     message = str(exception)
@@ -25,6 +30,48 @@ def enhance_import_error(exception, package, homepage):
     message += ' <{url}>'.format(url=homepage)
     exception.args = [message]
     exception.msg = [message]
+
+def parse_page_numbers(pages):
+    '''
+    parse_page_numbers(None) -> None
+    parse_page_numbers('17') -> [17]
+    parse_page_numbers('37-42') -> [37, 38, ..., 42]
+    parse_page_numbers('17,37-42') -> [17, 37, 38, ..., 42]
+    parse_page_numbers('42-37') -> []
+    parse_page_numbers('17-17') -> [17]
+    '''
+    if pages is None:
+        return
+    result = []
+    for page_range in pages.split(','):
+        if '-' in page_range:
+            x, y = list(map(int, page_range.split('-', 1)))
+            result += range(x, y + 1)
+        else:
+            result += [int(page_range, 10)]
+    return result
+
+_special_chars_replace = re.compile(u'''[\x00-\x1F'"\x5C\x7F-\x9F]''').sub
+
+def _special_chars_escape(m):
+    ch = m.group(0)
+    if ch in ('"', "'"):
+        return '\\' + ch
+    else:
+        return repr(ch)[2:-1]
+
+def smart_repr(s, encoding=None):
+    if encoding is None:
+        return repr(s)
+    if isinstance(s,six.text_type):
+        return repr(s)
+    try:
+        u = s.decode(encoding)
+    except UnicodeDecodeError:
+        return repr(s)
+    u = _special_chars_replace(_special_chars_escape, u)
+    s = u.encode(encoding)
+    return "'{0}'".format(s)
 
 class EncodingWarning(UserWarning):
     pass
